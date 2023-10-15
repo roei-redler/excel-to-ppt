@@ -1,0 +1,67 @@
+Sub CreateNewPres()
+    Dim ppt As PowerPoint.Application
+    Dim press As PowerPoint.Presentation
+    Dim sl As PowerPoint.Slide
+    Dim cl As PowerPoint.CustomLayout
+    Dim sh As PowerPoint.Shape
+    Dim rng As Range
+    Dim ws As Worksheet
+    Dim i As Integer
+    Dim presentationName As String
+    Dim filePath As String
+    
+    ' Set the presentation name
+    presentationName = Format(Now(), "dd/mm/yyyy hh:mm")
+    presentationName = Replace(presentationName, "/", "_")
+    presentationName = Replace(presentationName, ":", "_")
+    
+    ' Create a new instance of PowerPoint
+    Set ppt = New PowerPoint.Application
+    
+    ' Add a new presentation
+    Set press = ppt.Presentations.Add
+    
+    ' Set the custom layout for the slide
+    Set cl = press.SlideMaster.CustomLayouts(7)
+    
+    ' Loop through each worksheet in the active workbook
+    For Each ws In ThisWorkbook.Worksheets
+        ' Add a new slide for each sheet
+        Set sl = press.Slides.Add(press.Slides.Count + 1, ppLayoutBlank)
+        
+        ' Copy the contents of the current sheet
+        ws.UsedRange.Copy
+        
+        ' Copy the contents of the current sheet as an image
+        ws.UsedRange.CopyPicture Appearance:=xlScreen, Format:=xlBitmap
+        
+        ' Paste the copied range as an image onto the slide
+        sl.Shapes.PasteSpecial ppPasteBitmap
+        
+        ' Get the last shape on the slide
+        For i = sl.Shapes.Count To 1 Step -1
+            Set sh = sl.Shapes(i)
+            Exit For
+        Next i
+        
+        ' Position the pasted range on the slide
+        sh.Top = 0
+        sh.Left = 0
+    Next ws
+    
+    ' Save the presentation with the specified name
+    filePath = "C:\Users\mymame\Documents\" & presentationName & ".pptx"
+    press.SaveAs filePath
+    
+    ' Display a message box with the file location
+    MsgBox "The presentation has been saved at: " & vbCrLf & filePath
+    
+    ' Clean up
+    Set ppt = Nothing
+    Set press = Nothing
+    Set sl = Nothing
+    Set cl = Nothing
+    Set sh = Nothing
+    Set rng = Nothing
+    Set ws = Nothing
+End Sub
