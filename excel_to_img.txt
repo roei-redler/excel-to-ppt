@@ -1,0 +1,44 @@
+Sub SaveRangesAsImages()
+    Dim ws As Worksheet
+    Dim table As Range
+    Dim pic As picture
+    Dim cht As ChartObject
+    Dim myPath As String
+    Dim myPic As String
+    Dim myWidth As Long
+    Dim myHeight As Long
+
+    ' Set the base path where the images will be saved
+    myPath = "C:\Users\Roei-Laptop\Pictures\þþúé÷éä çãùä\"
+
+    ' Loop through each worksheet in the workbook
+    For Each ws In ThisWorkbook.Sheets
+        ' Define the range to be saved as an image
+        Set table = ws.Range("A1:T41")
+        
+        ' Generate a unique filename based on the current date and a random number
+        myPic = "Stock Performance " & Format(Date, "mm-dd-yy") & " " & _
+            WorksheetFunction.RandBetween(1000, 9999) & ".png"
+        
+        ' Copy the range as a picture
+        table.CopyPicture xlScreen, xlPicture
+        myWidth = table.Width
+        myHeight = table.Height
+        
+        ' Create a temporary chart object with dimensions matching the range
+        Set cht = ws.ChartObjects.Add(Left:=table.Left, Top:=table.Top, _
+            Width:=myWidth, Height:=myHeight)
+            
+        cht.Activate
+        
+        ' Paste the copied picture into the chart object
+        With cht.Chart
+            .Paste
+            ' Export the chart object as an image file
+            .Export Filename:=myPath & myPic, Filtername:="png"
+        End With
+        
+        ' Delete the temporary chart object
+        cht.Delete
+    Next ws
+End Sub
