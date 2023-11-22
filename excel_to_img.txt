@@ -8,8 +8,17 @@ Sub SaveRangesAsImages()
     Dim myWidth As Long
     Dim myHeight As Long
 
-    ' Set the base path where the images will be saved
-    myPath = "C:\Users\Roei-Laptop\Pictures\þþúé÷éä çãùä\"
+    ' Prompt the user to select a folder
+    With Application.FileDialog(msoFileDialogFolderPicker)
+        .Title = "Select a folder to save the images"
+        .Show
+        If .SelectedItems.Count > 0 Then
+            myPath = .SelectedItems(1) & "\"
+        Else
+            MsgBox "No folder selected. Exiting the macro.", vbExclamation
+            Exit Sub
+        End If
+    End With
 
     ' Loop through each worksheet in the workbook
     For Each ws In ThisWorkbook.Sheets
@@ -42,3 +51,4 @@ Sub SaveRangesAsImages()
         cht.Delete
     Next ws
 End Sub
+
